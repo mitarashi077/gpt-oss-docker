@@ -3,15 +3,15 @@ version: '3.8'
 services:
   ollama:
     build:
-      context: ..
+      context: .
       dockerfile: docker/Dockerfile
     container_name: gpt-oss-ollama
     ports:
       - "11434:11434"
     volumes:
-      - ../data:/root/.ollama
-      - ../config:/app/config
-      - ../logs:/app/logs
+      - ./data:/root/.ollama
+      - ./config:/app/config
+      - ./logs:/app/logs
     environment:
       - OLLAMA_HOST=0.0.0.0
       - OLLAMA_ORIGINS=*
@@ -26,7 +26,7 @@ services:
       - "6333:6333"
       - "6334:6334"
     volumes:
-      - ../data/qdrant:/qdrant/storage
+      - ./data/qdrant:/qdrant/storage
     environment:
       - QDRANT__SERVICE__GRPC_PORT=6334
     restart: unless-stopped
@@ -35,14 +35,14 @@ services:
 
   embeddings:
     build:
-      context: ..
+      context: .
       dockerfile: docker/Dockerfile.embeddings
     container_name: gpt-oss-embeddings
     ports:
       - "8001:8001"
     volumes:
-      - ../documents:/app/documents
-      - ../config/embeddings:/app/config
+      - ./documents:/app/documents
+      - ./config/embeddings:/app/config
     environment:
       - OLLAMA_HOST=http://ollama:11434
       - QDRANT_HOST=http://qdrant:6333

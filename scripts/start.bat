@@ -5,7 +5,7 @@ echo ===============================================
 cd /d "%~dp0\.."
 
 echo 🐳 Building and starting Docker containers...
-docker-compose -f docker/docker-compose.yml up -d
+docker-compose up -d
 
 echo ⏳ Waiting for services to initialize...
 timeout /t 15 /nobreak >nul
