@@ -37,6 +37,60 @@
 - Python 3.7+ (RAG機能用)
 - 最低8GB RAM推奨
 
+## 🔧 Docker Desktopセットアップ
+
+### 初回セットアップ（初心者向け）
+
+**自動セットアップガイド**を使用する場合：
+```bash
+scripts\setup-guide.bat
+```
+
+**手動セットアップ**の場合：
+
+#### 1. Docker Desktopのインストール
+1. [Docker Desktop公式サイト](https://www.docker.com/products/docker-desktop/)からダウンロード
+2. インストール時に「**WSL 2を使用**」を選択
+3. インストール後、再起動が必要な場合があります
+
+#### 2. WSL2の設定確認
+PowerShellを**管理者として**実行し、以下を実行：
+```powershell
+# WSL2のインストール
+wsl --install
+
+# WSL2を既定のバージョンに設定  
+wsl --set-default-version 2
+```
+
+#### 3. Docker Desktopの起動確認
+```bash
+# Docker環境チェック
+scripts\check-docker.bat
+
+# 問題がある場合のトラブルシューティング
+scripts\troubleshoot.bat
+```
+
+#### 4. 簡易起動（推奨）
+Docker Desktopの自動起動とRAG環境の起動：
+```bash
+scripts\easy-start.bat
+```
+
+### トラブルシューティング
+
+**Docker Daemonエラーが発生する場合：**
+1. `scripts\troubleshoot.bat` を実行して問題を診断
+2. Docker Desktopを手動で起動
+3. システムトレイのアイコンが緑色になるまで待つ（2-3分）
+4. `scripts\check-docker.bat` で動作確認
+
+**よくある問題と解決策：**
+- **起動しない**: BIOS/UEFIで仮想化を有効化
+- **WSL2エラー**: Windows機能で「Linux用Windowsサブシステム」を有効化
+- **メモリ不足**: Docker Desktopの設定でメモリ使用量を調整
+
 ## クイックスタート
 
 ### 1. リポジトリのクローン
@@ -77,9 +131,14 @@ gpt-oss-docker/
 ├── scripts/                 # 実行スクリプト
 │   ├── start.bat           # 環境起動（RAG対応）
 │   ├── stop.bat            # 環境停止
+│   ├── test.bat            # 動作確認
 │   ├── upload_doc.bat      # 文書アップロード
 │   ├── search_doc.bat      # 文書検索
 │   ├── rag_test.bat        # RAG対話テスト
+│   ├── setup-guide.bat     # セットアップガイド
+│   ├── check-docker.bat    # Docker環境確認
+│   ├── easy-start.bat      # 簡易起動（推奨）
+│   ├── troubleshoot.bat    # トラブルシューティング
 │   ├── embeddings_server.py # Embeddingsサーバー
 │   └── rag_query.py        # RAGクエリスクリプト
 ├── documents/              # アップロード用文書フォルダ
