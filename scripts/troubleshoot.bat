@@ -1,99 +1,99 @@
 @echo off
 echo ========================================
-echo 🔧 GPT-OSS Docker トラブルシューティング
+echo GPT-OSS Docker Troubleshooting
 echo ========================================
 echo.
-echo このスクリプトは、Dockerに関する一般的な問題を
-echo 診断して解決策を提示します。
+echo This script will diagnose common Docker issues
+echo and provide solutions.
 echo.
 pause
 
 echo ========================================
-echo 🔍 問題診断を開始します
+echo Starting Problem Diagnosis
 echo ========================================
 echo.
 
-echo [1] Docker Desktopインストール確認...
+echo [1] Checking Docker Desktop installation...
 where docker >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ❌ Docker Desktopがインストールされていません
+    echo [X] Docker Desktop is not installed
     echo.
-    echo 🔧 解決策:
-    echo 1. https://www.docker.com/products/docker-desktop/ を開く
-    echo 2. "Download for Windows"をダウンロード
-    echo 3. インストール時に「WSL 2を使用」を選択
+    echo Solution:
+    echo 1. Visit: https://www.docker.com/products/docker-desktop/
+    echo 2. Download "Docker Desktop for Windows"
+    echo 3. Install with "Use WSL 2" option selected
     echo.
     goto :end
 ) else (
-    echo ✅ Docker Desktopインストール済み
+    echo [OK] Docker Desktop is installed
 )
 
 echo.
-echo [2] Docker Daemon起動確認...
+echo [2] Checking Docker Daemon status...
 docker version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ❌ Docker Daemonが起動していません
+    echo [X] Docker Daemon is not running
     echo.
-    echo 🔧 解決策:
-    echo 1. スタートメニューから「Docker Desktop」を起動
-    echo 2. システムトレイのアイコンが緑色になるまで待つ
-    echo 3. 数分待ってから再試行
+    echo Solution:
+    echo 1. Start "Docker Desktop" from Start Menu
+    echo 2. Wait for system tray icon to turn green
+    echo 3. Wait 2-3 minutes for full startup
     echo.
-    echo 🔍 詳細診断を続けます...
+    echo Continuing with detailed diagnosis...
 ) else (
-    echo ✅ Docker Daemon起動中
+    echo [OK] Docker Daemon is running
     goto :running_check
 )
 
 echo.
-echo [3] プロセス確認...
+echo [3] Checking Docker Desktop process...
 tasklist /FI "IMAGENAME eq Docker Desktop.exe" 2>nul | find /I "Docker Desktop.exe" >nul
 if %errorlevel% equ 0 (
-    echo ⚠️  Docker Desktopプロセスは実行中ですが、Daemonが応答しません
+    echo [!] Docker Desktop process is running but Daemon is not responding
     echo.
-    echo 🔧 解決策:
-    echo 1. システムトレイのDockerアイコンを右クリック
-    echo 2. "Restart"を選択
-    echo 3. 完全に起動するまで3-5分待つ
+    echo Solution:
+    echo 1. Right-click Docker icon in system tray
+    echo 2. Select "Restart"
+    echo 3. Wait 3-5 minutes for complete startup
     echo.
 ) else (
-    echo ❌ Docker Desktopプロセスが実行されていません
+    echo [X] Docker Desktop process is not running
     echo.
-    echo 🔧 解決策:
-    echo 1. Docker Desktopを起動してください
+    echo Solution:
+    echo 1. Start Docker Desktop application
     echo.
 )
 
 echo.
-echo [4] WSL2状態確認...
+echo [4] Checking WSL2 status...
 wsl --status >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ❌ WSL2が正しく設定されていません
+    echo [X] WSL2 is not properly configured
     echo.
-    echo 🔧 解決策（PowerShellを管理者として実行）:
+    echo Solution (run in PowerShell as Administrator):
     echo   wsl --install
     echo   wsl --set-default-version 2
-    echo   （再起動が必要な場合があります）
+    echo   (Computer restart may be required)
     echo.
 ) else (
-    echo ✅ WSL2設定確認OK
+    echo [OK] WSL2 configuration is correct
 )
 
 echo.
-echo [5] Hyper-V/仮想化確認...
+echo [5] Checking virtualization support...
 systeminfo | find "Hyper-V" >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ⚠️  Hyper-V情報を取得できません
+    echo [!] Cannot verify Hyper-V information
     echo.
-    echo 🔧 確認事項:
-    echo 1. タスクマネージャー → パフォーマンス → CPU
-    echo 2. 「仮想化: 有効」になっているか確認
-    echo 3. 無効の場合、BIOS/UEFIで仮想化を有効化
+    echo Check manually:
+    echo 1. Task Manager -> Performance -> CPU
+    echo 2. Verify "Virtualization: Enabled"
+    echo 3. If disabled, enable in BIOS/UEFI:
     echo    - Intel: VT-x (Intel Virtualization Technology)
     echo    - AMD: AMD-V (AMD Virtualization)
     echo.
 ) else (
-    echo ✅ Hyper-V利用可能
+    echo [OK] Hyper-V is available
 )
 
 goto :solutions
@@ -101,112 +101,113 @@ goto :solutions
 :running_check
 echo.
 echo ========================================
-echo 🎯 Docker実行時の問題診断
+echo Docker Runtime Issue Diagnosis
 echo ========================================
 
 echo.
-echo [6] コンテナ起動状況...
+echo [6] Container status...
 docker ps -a
 echo.
 
-echo [7] ポート使用状況確認...
+echo [7] Port usage check...
 netstat -ano | findstr ":11434" >nul 2>&1
 if %errorlevel% equ 0 (
-    echo ⚠️  ポート11434が使用されています
+    echo [!] Port 11434 is in use (Ollama)
     echo.
-    echo 使用中のポート一覧:
+    echo Currently using port 11434:
     netstat -ano | findstr ":11434"
     echo.
 ) else (
-    echo ✅ ポート11434は空いています
+    echo [OK] Port 11434 is available
 )
 
 netstat -ano | findstr ":6333" >nul 2>&1
 if %errorlevel% equ 0 (
-    echo ⚠️  ポート6333が使用されています（Qdrant用）
+    echo [!] Port 6333 is in use (Qdrant)
     echo.
-    echo 使用中のポート一覧:
+    echo Currently using port 6333:
     netstat -ano | findstr ":6333"
     echo.
 ) else (
-    echo ✅ ポート6333は空いています
+    echo [OK] Port 6333 is available
 )
 
 netstat -ano | findstr ":8001" >nul 2>&1
 if %errorlevel% equ 0 (
-    echo ⚠️  ポート8001が使用されています（Embeddings用）
+    echo [!] Port 8001 is in use (Embeddings)
     echo.
-    echo 使用中のポート一覧:
+    echo Currently using port 8001:
     netstat -ano | findstr ":8001"
     echo.
 ) else (
-    echo ✅ ポート8001は空いています
+    echo [OK] Port 8001 is available
 )
 
 echo.
-echo [8] Docker Composeファイル確認...
+echo [8] Docker Compose configuration check...
 if exist "docker-compose.yml" (
-    echo ✅ docker-compose.yml存在確認OK
+    echo [OK] docker-compose.yml exists
     docker-compose config >nul 2>&1
     if %errorlevel% equ 0 (
-        echo ✅ docker-compose.yml構文確認OK
+        echo [OK] docker-compose.yml syntax is valid
     ) else (
-        echo ❌ docker-compose.yml構文エラー
+        echo [X] docker-compose.yml syntax error
         echo.
-        echo 🔧 解決策:
-        echo   docker-compose config でエラー詳細を確認
+        echo Solution:
+        echo   Run: docker-compose config
+        echo   Fix syntax errors shown
         echo.
     )
 ) else (
-    echo ❌ docker-compose.ymlが見つかりません
+    echo [X] docker-compose.yml not found
     echo.
-    echo 🔧 解決策:
-    echo   プロジェクトのルートディレクトリで実行してください
+    echo Solution:
+    echo   Run from project root directory
     echo.
 )
 
 :solutions
 echo.
 echo ========================================
-echo 💡 一般的な解決策
+echo Common Solutions
 echo ========================================
 echo.
-echo 🔧 Docker Desktop起動しない場合:
-echo   1. Windows Updateを最新に
-echo   2. 再起動後にDocker Desktopを起動
-echo   3. ウイルス対策ソフトの除外設定を確認
+echo Docker Desktop won't start:
+echo   1. Update Windows to latest version
+echo   2. Restart computer and try again
+echo   3. Check antivirus exclusions for Docker
 echo.
-echo 🔧 WSL2の問題:
-echo   1. Windows機能から「Linux用Windowsサブシステム」を有効化
-echo   2. 「仮想マシンプラットフォーム」を有効化
-echo   3. 再起動後にWSL2をインストール
+echo WSL2 issues:
+echo   1. Enable "Windows Subsystem for Linux" in Windows Features
+echo   2. Enable "Virtual Machine Platform" in Windows Features
+echo   3. Restart computer after enabling features
 echo.
-echo 🔧 メモリ不足の問題:
-echo   1. Docker Desktopの設定で使用メモリを調整
-echo   2. より軽量なモデル（7B）を使用
-echo   3. 不要なアプリケーションを終了
+echo Memory issues:
+echo   1. Adjust Docker Desktop memory settings
+echo   2. Use lighter models (7B instead of larger)
+echo   3. Close unnecessary applications
 echo.
-echo 🔧 ポート競合の問題:
-echo   1. 競合しているアプリケーションを終了
-echo   2. docker-compose.ymlでポート番号を変更
-echo   3. Windows Defenderファイアウォールの設定確認
+echo Port conflicts:
+echo   1. Stop applications using conflicting ports
+echo   2. Modify port numbers in docker-compose.yml
+echo   3. Check Windows Defender Firewall settings
 echo.
 
 :end
 echo ========================================
-echo 🎯 次のステップ
+echo Next Steps
 echo ========================================
 echo.
-echo 問題が解決したら、以下のコマンドを試してください:
+echo After resolving issues, try these commands:
 echo.
-echo   scripts\check-docker.bat    - Docker環境確認
-echo   scripts\easy-start.bat      - 自動起動試行
-echo   scripts\setup-guide.bat     - セットアップガイド
+echo   scripts\check-docker.bat    - Verify Docker environment
+echo   scripts\easy-start.bat      - Automatic startup
+echo   scripts\setup-guide.bat     - Full setup guide
 echo.
-echo まだ問題がある場合:
-echo   1. Docker Desktopを完全に終了
-echo   2. Windowsを再起動
-echo   3. Docker Desktopを起動
-echo   4. このスクリプトを再実行
+echo If problems persist:
+echo   1. Completely close Docker Desktop
+echo   2. Restart Windows
+echo   3. Start Docker Desktop
+echo   4. Run this troubleshooting script again
 echo.
 pause

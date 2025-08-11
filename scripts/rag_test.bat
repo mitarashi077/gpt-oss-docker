@@ -6,7 +6,7 @@ echo ===============================================
 echo Checking Python installation...
 python --version >nul 2>&1
 if %ERRORLEVEL% neq 0 (
-    echo ❌ Python is not installed or not in PATH
+    echo [X] Python is not installed or not in PATH
     echo Please install Python 3.7+ and try again
     pause
     exit /b 1

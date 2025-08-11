@@ -15,10 +15,10 @@ curl -X POST "http://localhost:8001/search?query=%query%&limit=5" 2>nul
 
 if %ERRORLEVEL% equ 0 (
     echo.
-    echo ✅ Search completed successfully!
+    echo [OK] Search completed successfully!
 ) else (
     echo.
-    echo ❌ Search failed. Please check:
+    echo [X] Search failed. Please check:
     echo    - RAG services are running
     echo    - Try running: scripts\start.bat
 )

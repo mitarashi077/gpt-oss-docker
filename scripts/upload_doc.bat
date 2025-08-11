@@ -15,10 +15,10 @@ curl -X POST "http://localhost:8001/upload" -F "file=@%filepath%" 2>nul
 
 if %ERRORLEVEL% equ 0 (
     echo.
-    echo ✅ Upload completed successfully!
+    echo [OK] Upload completed successfully!
 ) else (
     echo.
-    echo ❌ Upload failed. Please check:
+    echo [X] Upload failed. Please check:
     echo    - File path is correct
     echo    - RAG services are running
     echo    - Try running: scripts\start.bat
